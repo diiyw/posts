@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+  <meta name="baidu-site-verification" content="K0lvRNtIcQ">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":true,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: true,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="简介Lumen的Model操作使用的是 Laravel 内置的 Eloquent ORM，Eloquent提供了一个美观、简单的与数据库打交道的 ActiveRecord 实现，每张数据表都对应一个与该表进行交互的模型（Model），通过模型类，你可以对数据表进行查询、插入、更新、删除等操作。 配置应用的数据库配置位于 config/database.php（但是数据库用户及密码等敏感信息位于 .">
+<meta name="keywords" content="PHP,Mysql">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Lumen&#x2F;Laravel Model 操作">
+<meta property="og:url" content="http://diiyw.com/2020/11/10/lumen-model-tutorials/index.html">
+<meta property="og:site_name" content="Cheuk的博客">
+<meta property="og:description" content="简介Lumen的Model操作使用的是 Laravel 内置的 Eloquent ORM，Eloquent提供了一个美观、简单的与数据库打交道的 ActiveRecord 实现，每张数据表都对应一个与该表进行交互的模型（Model），通过模型类，你可以对数据表进行查询、插入、更新、删除等操作。 配置应用的数据库配置位于 config/database.php（但是数据库用户及密码等敏感信息位于 .">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2021-05-25T09:59:36.091Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Lumen&#x2F;Laravel Model 操作">
+<meta name="twitter:description" content="简介Lumen的Model操作使用的是 Laravel 内置的 Eloquent ORM，Eloquent提供了一个美观、简单的与数据库打交道的 ActiveRecord 实现，每张数据表都对应一个与该表进行交互的模型（Model），通过模型类，你可以对数据表进行查询、插入、更新、删除等操作。 配置应用的数据库配置位于 config/database.php（但是数据库用户及密码等敏感信息位于 .">
+  <link rel="canonical" href="http://diiyw.com/2020/11/10/lumen-model-tutorials/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>Lumen/Laravel Model 操作 | Cheuk的博客</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?38238812905aa6abdeaeceb0d319bfcf";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Cheuk的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a href="javascript:;" class="popup-trigger">
+        
+          <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+      </li>
+    
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="none"
+           placeholder="搜索..." spellcheck="false"
+           type="text" id="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+
+  <a href="https://github.com/diiyw" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+            
+
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="http://diiyw.com/2020/11/10/lumen-model-tutorials/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Cheuk">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Cheuk的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">Lumen/Laravel Model 操作
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2020-11-10 11:20:15" itemprop="dateCreated datePublished" datetime="2020-11-10T11:20:15+08:00">2020-11-10</time>
+            </span>
+          
+            
+
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-25 17:59:36" itemprop="dateModified" datetime="2021-05-25T17:59:36+08:00">2021-05-25</time>
+              </span>
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/PHP/" itemprop="url" rel="index"><span itemprop="name">PHP</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Lumen的Model操作使用的是 Laravel 内置的 Eloquent ORM，Eloquent提供了一个美观、简单的与数据库打交道的 ActiveRecord 实现，每张数据表都对应一个与该表进行交互的模型（Model），通过模型类，你可以对数据表进行查询、插入、更新、删除等操作。</p>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p>应用的数据库配置位于 <code>config/database.php</code>（但是数据库用户及密码等敏感信息位于 <code>.env</code> 文件）。在该文件中你可以定义所有的数据库连接，并指定哪个连接是默认连接。该文件中提供了所有支持数据库系统的配置示例。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">env(<span class="string">'DB_CONNECTION'</span>, <span class="string">'mysql'</span>) <span class="comment">// 配置文件中通过env()获取.env文件中配置的键值</span></span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<h2 id="模型定义"><a href="#模型定义" class="headerlink" title="模型定义"></a>模型定义</h2><p>模型定义的目录app\Models</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">App</span>\<span class="title">Models</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Illuminate</span>\<span class="title">Database</span>\<span class="title">Eloquent</span>\<span class="title">Model</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TestModel</span> <span class="keyword">extends</span> <span class="title">Model</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">// 指定连接名称</span></span><br><span class="line">    <span class="comment">// config/databases.php中的mysql索引项。</span></span><br><span class="line">    <span class="keyword">protected</span> $connection = <span class="string">"mysql"</span></span><br><span class="line">    <span class="comment">// 定义表名</span></span><br><span class="line">    <span class="keyword">protected</span> $table = <span class="string">"test"</span>;</span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 定义默认主键，默认是id，如果是其他值这里需要修改</span></span><br><span class="line">    <span class="keyword">protected</span> $primaryKey = <span class="string">"id"</span>;</span><br><span class="line">    <span class="comment">// 这里是主键的类型，默认int如果是非int类型就需要修改</span></span><br><span class="line">    <span class="keyword">protected</span> $keyType = <span class="string">'int'</span>;</span><br><span class="line">    <span class="comment">// 主键是否是自增的配置</span></span><br><span class="line">    <span class="keyword">public</span> $incrementing = <span class="keyword">true</span>;</span><br><span class="line">  </span><br><span class="line">    <span class="comment">// 表明模型是否应该被打上时间戳，这个功能可以让ORM自动为我们的时间字段自动更新配置上时间</span></span><br><span class="line">    <span class="comment">// 配合CREATED_AT 使用 UPDATED_AT使用</span></span><br><span class="line">    <span class="comment">// 默认开启，如果不实用该功能配置false</span></span><br><span class="line">    <span class="keyword">public</span> $timestamps = <span class="keyword">false</span>;</span><br><span class="line">    <span class="comment">// CREATED_AT、UPDATED_AT配置常量可以自定义自己的字段名称</span></span><br><span class="line">    <span class="keyword">const</span> CREATED_AT = <span class="string">'created_at'</span>;</span><br><span class="line">    <span class="keyword">const</span> UPDATED_AT = <span class="string">'updated_at'</span>;</span><br><span class="line">    <span class="comment">// 当然也可以指定保存的时间格式</span></span><br><span class="line">    <span class="comment">// 这里可接受的值跟date()的接受的值是一致的。</span></span><br><span class="line">    <span class="comment">// 文档 https://www.php.net/manual/zh/function.date.php</span></span><br><span class="line">    <span class="keyword">protected</span> $dateFormat = <span class="string">'U'</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="模型CRUD"><a href="#模型CRUD" class="headerlink" title="模型CRUD"></a>模型CRUD</h2><h3 id="查询"><a href="#查询" class="headerlink" title="查询"></a>查询</h3><p>在Contoller，Service层等可以直接调用模型方法</p>
+<h4 id="获取全部数据"><a href="#获取全部数据" class="headerlink" title="获取全部数据"></a>获取全部数据</h4><p><code>all()</code>返回所有数据，如果数据存在返回对象<code>\Illuminate\Database\Eloquent\Collection</code> 可以使用<code>toArray()</code>方法输出为数组格式。如果没有数据放回空数组。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$data = TestModel::all();</span><br><span class="line">$data-&gt;toArray();</span><br></pre></td></tr></table></figure>
+
+<h4 id="获取一条数据"><a href="#获取一条数据" class="headerlink" title="获取一条数据"></a>获取一条数据</h4><p><code>first()</code> 如果找到了数据返回的是个对象, 可以使用<code>toArray()</code>方法输出为数组格式，如果找不到数据返回<code>null</code>;</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$data = TestModel::first();</span><br><span class="line">$data-&gt;toArray();</span><br></pre></td></tr></table></figure>
+
+<h4 id="获取多条数据"><a href="#获取多条数据" class="headerlink" title="获取多条数据"></a>获取多条数据</h4><p><strong>注意：</strong> 无论查询结果是否为空，<code>get()</code>方法都放回一个对象，如果使用empty() 检测一定都是<code>false</code>;所以可以完全直接调用<code>toArray()</code>，这一点和<code>first()</code>是不一样的。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$data = TestModel::get();</span><br><span class="line">$data-&gt;toArray();</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意：</strong> 如果对结果集对象遍历</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">  <span class="keyword">foreach</span>($data <span class="keyword">as</span> $v) &#123;</span><br><span class="line">    <span class="comment">// 这里的$v是个stdClass对象</span></span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="查询指定字段"><a href="#查询指定字段" class="headerlink" title="查询指定字段"></a>查询指定字段</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$data = TestModel::select(<span class="string">"name"</span>)-&gt;first();</span><br><span class="line"><span class="comment">// 多个字段</span></span><br><span class="line">$data = TestModel::select(<span class="string">"name"</span>,<span class="string">"status"</span>)-&gt;first();</span><br></pre></td></tr></table></figure>
+
+<p>如果要对字段进行表达式处理</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 多个字段</span></span><br><span class="line">$data = TestModel::selectRaw(<span class="string">"name,status"</span>)-&gt;first();</span><br><span class="line"><span class="comment">// 复杂查询</span></span><br><span class="line">$data = TestModel::selectRaw(<span class="string">"CASE name WHEN 1 THEN 1 ELSE -1 END name"</span>)-&gt;first();</span><br></pre></td></tr></table></figure>
+
+<h4 id="Where条件"><a href="#Where条件" class="headerlink" title="Where条件"></a>Where条件</h4><p>where条件大都封装好了，可以使用whereXXX()调用，如<code>whereIn()</code>、<code>whereBetween</code>。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">$data = TestModel::select(<span class="string">"name"</span>)-&gt;where(<span class="string">"status"</span>,<span class="number">1</span>)-&gt;first();</span><br><span class="line"><span class="comment">// 或者</span></span><br><span class="line">$data = TestModel::select(<span class="string">"name"</span>)-&gt;where(<span class="string">"status"</span>,<span class="string">"="</span>,<span class="number">1</span>)-&gt;first();</span><br><span class="line"><span class="comment">// in 查询</span></span><br><span class="line">$data = TestModel::select(<span class="string">"name"</span>)-&gt;whereIn(<span class="string">"status"</span>,[<span class="number">1</span>,<span class="number">-1</span>])-&gt;first();</span><br><span class="line"><span class="comment">// between</span></span><br><span class="line"><span class="comment">// select name from `test` where `status` = ? and `status` between ? and ?</span></span><br><span class="line">$data = TestModel::select(<span class="string">"name"</span>)-&gt;where(<span class="string">"name"</span>,<span class="string">"hello"</span>)-&gt;whereBetween(<span class="string">"status"</span>,[<span class="number">1</span>,<span class="number">-1</span>])-&gt;first();</span><br><span class="line"><span class="comment">// between </span></span><br><span class="line"><span class="comment">// select name from `test` where `status` = ? or `status` between ? and ?</span></span><br><span class="line">$data = TestModel::select(<span class="string">"name"</span>)-&gt;where(<span class="string">"name"</span>,<span class="string">"hello"</span>)-&gt;whereBetween(<span class="string">"status"</span>,[<span class="number">1</span>,<span class="number">-1</span>],<span class="string">"or"</span>)-&gt;first();</span><br><span class="line"><span class="comment">// between </span></span><br><span class="line"><span class="comment">// select name from `test` where `status` = ? or `status` not between ? and ?</span></span><br><span class="line">$data = TestModel::select(<span class="string">"name"</span>)-&gt;where(<span class="string">"name"</span>,<span class="string">"hello"</span>)-&gt;whereBetween(<span class="string">"status"</span>,[<span class="number">1</span>,<span class="number">-1</span>],<span class="string">"or"</span>,<span class="keyword">true</span>)-&gt;first();</span><br><span class="line"><span class="comment">// or </span></span><br><span class="line">$data = TestModel::select(<span class="string">"name"</span>)-&gt;orWhere(<span class="string">"status"</span>,<span class="string">"="</span>,<span class="number">1</span>)-&gt;first();</span><br></pre></td></tr></table></figure>
+
+<h4 id="分页"><a href="#分页" class="headerlink" title="分页"></a>分页</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$data = TestModel::select(<span class="string">"name"</span>)-&gt;orWhere(<span class="string">"status"</span>,<span class="string">"="</span>,<span class="number">1</span>)-&gt;offset(<span class="number">0</span>)-&gt;limit(<span class="number">10</span>)-&gt;get();</span><br><span class="line"><span class="comment">// 或者</span></span><br><span class="line">$data = TestModel::select(<span class="string">"name"</span>)-&gt;orWhere(<span class="string">"status"</span>,<span class="string">"="</span>,<span class="number">1</span>)-&gt;skip(<span class="number">10</span>)-&gt;limit(<span class="number">10</span>)-&gt;get();</span><br></pre></td></tr></table></figure>
+
+<h4 id="自动分页"><a href="#自动分页" class="headerlink" title="自动分页"></a>自动分页</h4><p>Eloquent ORM 内置一个非常方便的自动分页处理函数。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 只要传入每页条数， Eloquent自动帮你处理分页数据。指定页数是参数`page`可以修改自己的名称。</span></span><br><span class="line">$users = TestModel::select(<span class="string">"name"</span>)-&gt;paginate(<span class="number">10</span>);</span><br></pre></td></tr></table></figure>
+
+<p>$users是一个分页对象，可以使用 <code>appends</code> 方法增加搜索字串到分页链接中：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$users-&gt;appends([<span class="string">'sort'</span> =&gt; <span class="string">'votes'</span>]);</span><br></pre></td></tr></table></figure>
+
+<p>这样会产生类似下列的链接：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://example.com/something?page=2&amp;sort=votes</span><br></pre></td></tr></table></figure>
+
+<p>如果您想要将「哈希片段」加到分页的 URL，您可以使用 <code>fragment</code> 方法：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$users-&gt;fragment(<span class="string">'foo'</span>);</span><br></pre></td></tr></table></figure>
+
+<p>此方法调用后将产生 URL，看起来像这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://example.com/something?page=2#foo</span><br></pre></td></tr></table></figure>
+
+<p><code>setPath</code> 方法自定义使用的 URL：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$users-&gt;setPath(<span class="string">'http://domain/path'</span>);</span><br></pre></td></tr></table></figure>
+
+<h4 id="Join连表查询"><a href="#Join连表查询" class="headerlink" title="Join连表查询"></a>Join连表查询</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$data = TestModel::select(<span class="string">"name"</span>)-&gt;leftJoin(<span class="string">"user"</span>,<span class="string">"user.id"</span>,<span class="string">"="</span>,<span class="string">"test.id"</span>)-&gt;first();</span><br></pre></td></tr></table></figure>
+
+<h4 id="Count等聚合查询"><a href="#Count等聚合查询" class="headerlink" title="Count等聚合查询"></a>Count等聚合查询</h4><p>直接返回整型数。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">TestModel::count();</span><br><span class="line">TestModel::max(<span class="string">"price"</span>);</span><br></pre></td></tr></table></figure>
+
+<h4 id="分组与排序"><a href="#分组与排序" class="headerlink" title="分组与排序"></a>分组与排序</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$data = TestModel::orderBy(<span class="string">"id"</span>,<span class="string">"desc"</span>)-&gt;first();</span><br><span class="line">$data = TestModel::orderBy(<span class="string">"id"</span>,<span class="string">"desc"</span>)-&gt;groupBy(<span class="string">"city"</span>)-&gt;first();</span><br></pre></td></tr></table></figure>
+
+<h4 id="执行原生语句"><a href="#执行原生语句" class="headerlink" title="执行原生语句"></a>执行原生语句</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 这个方法返回一个二维数组、数组元素是一个stdClass对象。查询不到数据返回空数组。</span></span><br><span class="line">DB::connection(<span class="string">"mysql"</span>)-&gt;select(<span class="string">"select * from user where status=? limit 1"</span>,[<span class="number">1</span>]);</span><br><span class="line"><span class="comment">// 或者，返回与上面的一致</span></span><br><span class="line">$data = (<span class="keyword">new</span> TestModel())-&gt;getConnection()-&gt;select(<span class="string">"select * from user where status=? limit 1"</span>,[<span class="number">1</span>]);</span><br></pre></td></tr></table></figure>
+
+<h3 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 返回布尔值，成功或者失败 </span></span><br><span class="line">$success = TestModel::insert([<span class="string">"namae"</span> =&gt; <span class="string">"john"</span>]);</span><br><span class="line"><span class="comment">// 返回自增ID的值</span></span><br><span class="line">$id = TestModel::insertGetId([<span class="string">"namae"</span> =&gt; <span class="string">"john"</span>]);</span><br></pre></td></tr></table></figure>
+
+<h3 id="更新"><a href="#更新" class="headerlink" title="更新"></a>更新</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 返回受影响的行数</span></span><br><span class="line">$rowEffect = TestModel::where(<span class="string">"id"</span>,<span class="number">1</span>)-&gt;update([<span class="string">"status"</span>=&gt;<span class="number">1</span>]);</span><br><span class="line"><span class="comment">// 或者</span></span><br><span class="line">$model =  TestModel::find($id);</span><br><span class="line">$model-&gt;status = <span class="number">1</span>;</span><br><span class="line"><span class="comment">// 返回布尔值</span></span><br><span class="line">$model-&gt;save();</span><br></pre></td></tr></table></figure>
+
+<h3 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 返回删除影响数</span></span><br><span class="line">$delete = TestModel::where(<span class="string">"id"</span>,<span class="number">1</span>)-&gt;delete();</span><br></pre></td></tr></table></figure>
+
+<h2 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h2><p>事务的三个方法<code>beginTransaction</code>,<code>commit</code>,<code>rollBack</code>返回的都是<code>NULL</code>，出错必须用try catch结构包裹处理异常错误；</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">	DB::beginTransaction();</span><br><span class="line"> 	<span class="comment">// todo something</span></span><br><span class="line">  DB::commit();</span><br><span class="line">&#125; <span class="keyword">catch</span> (<span class="keyword">Exception</span> $e) &#123;</span><br><span class="line">  DB::rollBack();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>或者</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">	TestModel::beginTransaction();</span><br><span class="line"> 	<span class="comment">// todo something</span></span><br><span class="line">  TestModel::commit();</span><br><span class="line">&#125; <span class="keyword">catch</span> (<span class="keyword">Exception</span> $e) &#123;</span><br><span class="line">  TestModel::rollBack();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="高级用法"><a href="#高级用法" class="headerlink" title="高级用法"></a>高级用法</h2><p>chuck处理大批量查询数据，减少内存占用</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">TestModel::chunk(<span class="number">100</span>,<span class="function"><span class="keyword">function</span><span class="params">($data)</span></span>&#123;</span><br><span class="line">  <span class="comment">// todo something</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>使用<code>cursor()</code>逻辑过滤</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 无论有无结果集均返回的是集合对象，可以使用toArray()s</span></span><br><span class="line">$result = TestModel::cursor()-&gt;filter(<span class="function"><span class="keyword">function</span> <span class="params">($test)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> $test-&gt;id &gt; <span class="number">500</span>;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>pluck返回指定字段的值数组</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 返回集合对象，无论是否有记录都返回集合对象，toArray()如果为空就是返回空数组。</span></span><br><span class="line">$result = TestModel::where(<span class="string">"id"</span>,<span class="string">"&gt;="</span>,<span class="number">1</span>)-&gt;pluck(<span class="string">"id"</span>);</span><br><span class="line"><span class="comment">// 可以使用toArray()转换成数组</span></span><br><span class="line">$data = $resut=&gt;toArray();</span><br><span class="line"><span class="comment">// [1,2,3,4,.....]</span></span><br></pre></td></tr></table></figure>
+
+<p>与<code>get(&#39;id&#39;)</code>返回结果的区别：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$getResult = TestModel::get(<span class="string">"id"</span>)-&gt;toArray();</span><br><span class="line">$pluckResult = TestModel::pluck(<span class="string">"id"</span>)-&gt;toArray();</span><br></pre></td></tr></table></figure>
+
+<p><code>$getResult</code> 结果:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">array</span> (</span><br><span class="line">  <span class="number">0</span> =&gt; </span><br><span class="line">  <span class="keyword">array</span> (</span><br><span class="line">    <span class="string">'id'</span> =&gt; <span class="number">1</span>,</span><br><span class="line">  ),</span><br><span class="line">  <span class="number">1</span> =&gt; </span><br><span class="line">  <span class="keyword">array</span> (</span><br><span class="line">    <span class="string">'id'</span> =&gt; <span class="number">2</span>,</span><br><span class="line">  ),</span><br><span class="line">  <span class="number">2</span> =&gt; </span><br><span class="line">  <span class="keyword">array</span> (</span><br><span class="line">    <span class="string">'id'</span> =&gt; <span class="number">3</span>,</span><br><span class="line">  ),</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p><code>$pluckResult</code> 结果:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">array</span> (</span><br><span class="line">  <span class="number">0</span> =&gt; <span class="number">1</span>,</span><br><span class="line">  <span class="number">1</span> =&gt; <span class="number">2</span>,</span><br><span class="line">  <span class="number">2</span> =&gt; <span class="number">3</span>,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>pluck可以指定数据中的某个字段值作为键，假设数据库结构</p>
+<table>
+<thead>
+<tr>
+<th>Id</th>
+<th>status</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>Off</td>
+</tr>
+<tr>
+<td>2</td>
+<td>On</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Freeze</td>
+</tr>
+</tbody></table>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$pluckResult = TestModel::pluck(<span class="string">"id"</span>,<span class="string">"status"</span>)-&gt;toArray();</span><br></pre></td></tr></table></figure>
+
+<p>则最终结果输出：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">array</span> (</span><br><span class="line">  <span class="string">"off"</span> =&gt; <span class="number">1</span>,</span><br><span class="line">  <span class="string">"On"</span> =&gt; <span class="number">2</span>,</span><br><span class="line">  <span class="string">"Freeze"</span> =&gt; <span class="number">3</span>,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<p>toSql查看构造器最终的SQL语句</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">TestModel::toSql();</span><br><span class="line">TestModel::where(<span class="string">"id"</span>,<span class="string">"&gt;="</span>,<span class="number">1</span>)-&gt;toSql();</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>大部分sql的关键字的表达方式，Eloquent都已经实现，IDE输入关键字可自动提示！对于复杂SQL比如使用了聚合函数等，Eloquent都提供了xxxRaw()的方法。比如：selectRaw，whereRaw灵活应用。</p>
+
+    </div>
+
+    
+    
+    
+        
+      
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者： </strong>Cheuk</li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://diiyw.com/2020/11/10/lumen-model-tutorials/" title="Lumen/Laravel Model 操作">http://diiyw.com/2020/11/10/lumen-model-tutorials/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fa fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！</li>
+</ul>
+</div>
+
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/PHP/" rel="tag"># PHP</a>
+            
+              <a href="/tags/Mysql/" rel="tag"># Mysql</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2020/06/20/socks-procotol/" rel="next" title="Socks4(a)\5协议">
+                  <i class="fa fa-chevron-left"></i> Socks4(a)\5协议
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2021/04/27/go-special-pit/" rel="prev" title="Go的坑点记录 （持续记录）">
+                  Go的坑点记录 （持续记录） <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+    
+    <div class="comments" id="gitalk-container"></div>
+  
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置"><span class="nav-number">2.</span> <span class="nav-text">配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模型定义"><span class="nav-number">3.</span> <span class="nav-text">模型定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模型CRUD"><span class="nav-number">4.</span> <span class="nav-text">模型CRUD</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#查询"><span class="nav-number">4.1.</span> <span class="nav-text">查询</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#获取全部数据"><span class="nav-number">4.1.1.</span> <span class="nav-text">获取全部数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#获取一条数据"><span class="nav-number">4.1.2.</span> <span class="nav-text">获取一条数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#获取多条数据"><span class="nav-number">4.1.3.</span> <span class="nav-text">获取多条数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查询指定字段"><span class="nav-number">4.1.4.</span> <span class="nav-text">查询指定字段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Where条件"><span class="nav-number">4.1.5.</span> <span class="nav-text">Where条件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#分页"><span class="nav-number">4.1.6.</span> <span class="nav-text">分页</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#自动分页"><span class="nav-number">4.1.7.</span> <span class="nav-text">自动分页</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Join连表查询"><span class="nav-number">4.1.8.</span> <span class="nav-text">Join连表查询</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Count等聚合查询"><span class="nav-number">4.1.9.</span> <span class="nav-text">Count等聚合查询</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#分组与排序"><span class="nav-number">4.1.10.</span> <span class="nav-text">分组与排序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#执行原生语句"><span class="nav-number">4.1.11.</span> <span class="nav-text">执行原生语句</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#插入"><span class="nav-number">4.2.</span> <span class="nav-text">插入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#更新"><span class="nav-number">4.3.</span> <span class="nav-text">更新</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#删除"><span class="nav-number">4.4.</span> <span class="nav-text">删除</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#事务"><span class="nav-number">5.</span> <span class="nav-text">事务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#高级用法"><span class="nav-number">6.</span> <span class="nav-text">高级用法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/avatar.jpg"
+      alt="Cheuk">
+  <p class="site-author-name" itemprop="name">Cheuk</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/diiyw" title="GitHub &rarr; https://github.com/diiyw" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    
+  
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="http://www.huiremai.com" title="http://www.huiremai.com" rel="noopener" target="_blank">汇热卖</a>
+        </li>
+      
+    </ul>
+  </div>
+
+      </div>
+        <div class="back-to-top motion-element">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+      
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2019 – <span itemprop="copyrightYear">2021</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Cheuk</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.4.0</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+  
+    <span class="post-meta-divider">|</span>
+  
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/pisces.js?v=7.4.0"></script>
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+  <script src="/js/local-search.js?v=7.4.0"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID: 'ed95c23b78d7e422aed2',
+      clientSecret: '5d9d01ef5be5f27426a1cdf870d00f85f39bd497',
+      repo: 'posts',
+      owner: 'diiyw',
+      admin: ['diiyw'],
+      id: 'b3cf775c7ab115ce04fbb3b4ccae07f7',
+        language: 'zh-CN',
+      
+      distractionFreeMode: 'true'
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+</script>
+
+</body>
+</html>
